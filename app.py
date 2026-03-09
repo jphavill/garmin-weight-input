@@ -8,7 +8,7 @@ from pathlib import Path
 
 app = FastAPI()
 
-TOKEN_FILE = Path(os.getenv("TOKEN_FILE", "/app/data/garth_token"))
+TOKEN_FILE = Path(os.getenv("TOKEN_FILE", "/app/data"))
 GARMIN_EMAIL = os.getenv("GARMIN_EMAIL", "")
 GARMIN_PASSWORD = os.getenv("GARMIN_PASSWORD", "")
 
@@ -46,6 +46,12 @@ def set_weight(data: WeightInput):
     try:
         get_api()
         
+        try:
+            profile = garth.connectapi("/userprofile-service/userprofile/profile")
+            username = profile.get("displayName") if profile else "unknown"
+        except Exception as e:
+            username = f"error: {e}"
+        
         dt = datetime.now()
         dt_gmt = datetime.now(timezone.utc)
         
@@ -57,8 +63,8 @@ def set_weight(data: WeightInput):
             "value": data.weight
         }
         
-        garth.client.post("connectapi", "/weight-service/user-weight", json=payload, api=True)
+        result = garth.client.post("connectapi", "/weight-service/user-weight", json=payload, api=True)
         
-        return {"success": True, "weight": data.weight}
+        return {"success": True, "weight": data.weight, "username": username, "result": str(result)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
