@@ -6,6 +6,8 @@ services:
       - "8002:8002"
     env_file:
       - .env
+    environment:
+      - TZ=America/Halifax
     volumes:
       - ./data:/app/data
     restart: unless-stopped

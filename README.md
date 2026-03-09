@@ -21,6 +21,8 @@ FastAPI service to log weight to Garmin Connect.
    docker-compose up -d
    ```
 
+4. Set your timezone in `docker-compose.yml` (default is UTC). Find your timezone at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones and update the `TZ` environment variable.
+
 ## Usage
 
 ### Log weight
