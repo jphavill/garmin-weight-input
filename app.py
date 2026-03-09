@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import garth
 from garth.exc import GarthException
-from datetime import date
+from datetime import datetime, timezone
 import os
 from pathlib import Path
 
@@ -28,6 +28,10 @@ def get_api():
     garth.save(TOKEN_FILE)
 
 
+def _fmt_ts(dt: datetime) -> str:
+    return dt.replace(tzinfo=None).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+
+
 class WeightInput(BaseModel):
     weight: float
 
@@ -42,13 +46,18 @@ def set_weight(data: WeightInput):
     try:
         get_api()
         
+        dt = datetime.now()
+        dt_gmt = datetime.now(timezone.utc)
+        
         payload = {
-            "date": str(date.today()),
+            "dateTimestamp": _fmt_ts(dt),
+            "gmtTimestamp": _fmt_ts(dt_gmt),
             "unitKey": "kg",
+            "sourceType": "MANUAL",
             "value": data.weight
         }
         
-        garth.client.post("connectapi", "/weight-service/user-weight", json=payload)
+        garth.client.post("connectapi", "/weight-service/user-weight", json=payload, api=True)
         
         return {"success": True, "weight": data.weight}
     except Exception as e:
