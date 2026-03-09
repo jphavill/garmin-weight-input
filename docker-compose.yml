@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  garmin-weight-api:
+    build: .
+    container_name: garmin-weight-api
+    ports:
+      - "8002:8002"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
