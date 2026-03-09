@@ -8,7 +8,7 @@ from pathlib import Path
 
 app = FastAPI()
 
-TOKEN_FILE = Path(os.getenv("TOKEN_FILE", "/app/data"))
+TOKEN_FILE = Path(os.getenv("TOKEN_FILE", "/app/data/garth_token"))
 GARMIN_EMAIL = os.getenv("GARMIN_EMAIL", "")
 GARMIN_PASSWORD = os.getenv("GARMIN_PASSWORD", "")
 
