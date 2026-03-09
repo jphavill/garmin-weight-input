@@ -27,7 +27,7 @@ FastAPI service to log weight to Garmin Connect.
 ```bash
 curl -X POST http://localhost:8002/weight \
   -H "Content-Type: application/json" \
-  -d '{"weight": 185.5, "unit": "lbs"}'
+  -d '{"weight": 78.1}'
 ```
 
 ### Health check
@@ -42,5 +42,5 @@ curl http://localhost:8002/health
 3. Add "Get Contents of URL" action:
    - Method: POST
    - Headers: `Content-Type: application/json`
-   - Request Body: JSON Dictionary with `weight` and optionally `unit`
+   - Request Body: JSON Dictionary with `weight`
 4. Use "Ask for Input" action to get weight from user
