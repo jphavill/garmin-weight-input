@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import garth
 from garth.exc import GarthException
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, date as dt_date
 import os
 from pathlib import Path
 
@@ -65,5 +65,23 @@ def set_weight(data: WeightInput):
             "payload": payload,
             "status": result.status_code
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/weight")
+def get_weight():
+    try:
+        get_api()
+        
+        today = dt_date.today()
+        start = today - timedelta(days=7)
+        
+        result = garth.connectapi(
+            f"/weight-service/weight/range/{start}/{today}",
+            params={"includeAll": True}
+        )
+        
+        return {"weights": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
