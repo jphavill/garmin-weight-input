@@ -44,10 +44,3 @@ curl http://localhost:8002/health
    - Headers: `Content-Type: application/json`
    - Request Body: JSON Dictionary with `weight` and optionally `unit`
 4. Use "Ask for Input" action to get weight from user
-
-## Tailscale Access
-
-If accessing remotely via Tailscale, ensure:
-- Tailscale is running on your server
-- The container port 8002 is exposed
-- Use your Tailscale IP (100.x.x.x) in your iOS Shortcut URL
