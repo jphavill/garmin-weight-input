@@ -46,12 +46,6 @@ def set_weight(data: WeightInput):
     try:
         get_api()
         
-        try:
-            profile = garth.connectapi("/userprofile-service/userprofile/profile")
-            username = profile.get("displayName") if profile else "unknown"
-        except Exception as e:
-            username = f"error: {e}"
-        
         dt = datetime.now()
         dt_gmt = datetime.now(timezone.utc)
         
@@ -65,6 +59,11 @@ def set_weight(data: WeightInput):
         
         result = garth.client.post("connectapi", "/weight-service/user-weight", json=payload, api=True)
         
-        return {"success": True, "weight": data.weight, "username": username, "result": str(result)}
+        return {
+            "success": True,
+            "weight": data.weight,
+            "payload": payload,
+            "status": result.status_code
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
