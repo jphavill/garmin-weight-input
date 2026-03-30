@@ -9,7 +9,7 @@ RUN uv pip install --system --no-cache -r requirements.txt
 
 RUN mkdir -p /app/data
 
-COPY app.py .
+COPY . .
 
 EXPOSE 8002
 
