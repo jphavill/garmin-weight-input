@@ -51,9 +51,9 @@ curl -X POST http://localhost:8002/hike-to-ruck \
 - Finds the latest Garmin activity.
 - Requires the activity to be a hiking activity and started within the last 8 hours.
 - Accepts `pack_weight` in kilograms and converts to grams before sending to Garmin.
-- Converts activity type from hiking to rucking.
-- Sets `summaryDTO.beginPackWeight` to the converted grams value.
-- Renames activity title by replacing `Hiking` with `Rucking`.
+- Uses one production update path: `PUT /activity-service/activity/{id}` on `connectapi` with a minimal payload.
+- Updates activity type to `rucking` and sets `summaryDTO.beginPackWeight` to the converted grams value.
+- Renames activity title by replacing `Hiking` with `Rucking` via explicit activity-name update.
 
 Example success response:
 
@@ -67,6 +67,7 @@ Example success response:
   "original_activity_name": "Halifax Hiking",
   "new_activity_name": "Halifax Rucking",
   "garmin_activity_name_after_update": "Halifax Rucking",
+  "update_method": "connectapi_put_minimal",
   "pack_weight": 5.0
 }
 ```
