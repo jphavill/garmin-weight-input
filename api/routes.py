@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import APIRouter, HTTPException
 
 from auth.garmin_auth import get_garmin_client
@@ -10,6 +12,7 @@ from core.errors import (
 )
 from models.requests import ConvertLatestHikeToRuckRequest, WeightInput
 from services.hike_to_ruck_service import convert_latest_hike_to_ruck
+from services.shoe_wear_service import get_shoe_wear
 from services.weight_service import log_weight
 
 router = APIRouter()
@@ -60,5 +63,19 @@ def convert_latest_hike_to_ruck_route(request: ConvertLatestHikeToRuckRequest) -
                 "response_body": exc.response_body,
             },
         ) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/shoe-wear")
+def shoe_wear(start_date: date, end_date: date) -> dict:
+    if start_date > end_date:
+        raise HTTPException(status_code=400, detail="start_date must be less than or equal to end_date")
+
+    try:
+        client = get_garmin_client()
+        return get_shoe_wear(client, start_date, end_date)
+    except (GarminAuthError, GarminUpdateError) as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc

@@ -72,6 +72,54 @@ Example success response:
 }
 ```
 
+### Shoe wear distance summary
+
+`/shoe-wear` returns running, walking, and rucking distance totals (km) plus per-activity details for a date range.
+
+```bash
+curl "http://localhost:8002/shoe-wear?start_date=2026-01-01&end_date=2026-01-31"
+```
+
+`/shoe-wear` behavior:
+
+- Requires `start_date` and `end_date` query params in `YYYY-MM-DD` format.
+- Returns `400` if `start_date` is after `end_date`.
+- Fetches Garmin activities for `running`, `walking`, and `hiking`.
+- Applies local ruck classification to hiking activities and includes only classified rucks in the `rucking` bucket.
+- Returns totals rounded to 2 decimals, activity counts, and normalized activity arrays.
+
+Example success response:
+
+```json
+{
+  "startDate": "2026-01-01",
+  "endDate": "2026-01-31",
+  "totals": {
+    "totalKm": 42.35,
+    "runningKm": 18.9,
+    "walkingKm": 12.45,
+    "ruckingKm": 11.0
+  },
+  "activityCounts": {
+    "running": 5,
+    "walking": 4,
+    "rucking": 3
+  },
+  "activities": {
+    "running": [
+      {
+        "activityId": 123,
+        "activityName": "Morning Run",
+        "startTimeLocal": "2026-01-03 07:12:01",
+        "distanceKm": 5.25
+      }
+    ],
+    "walking": [],
+    "rucking": []
+  }
+}
+```
+
 ### Health check
 ```bash
 curl http://localhost:8002/health
