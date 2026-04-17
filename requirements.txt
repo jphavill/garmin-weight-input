@@ -1,7 +1,6 @@
 fastapi
 uvicorn
-garth
-garminconnect
+garminconnect==0.3.2
 python-dotenv
 pytest
 httpx

@@ -5,23 +5,24 @@ from garminconnect import Garmin
 
 from core.errors import GarminAuthError
 
-TOKEN_FILE = Path(os.getenv("TOKEN_FILE", "/app/data/garth_token"))
+TOKEN_STORE_PATH = Path(os.getenv("TOKEN_STORE_PATH", "/app/data/garmin_tokens/garmin_tokens.json"))
+
+
+def _normalize_tokenstore_path(path: Path) -> Path:
+    if path.suffix == ".json":
+        return path
+    return path / "garmin_tokens.json"
 
 
 def _resolve_tokenstore_path() -> Path:
-    candidates = [
-        TOKEN_FILE,
-        Path(__file__).resolve().parents[1] / "data" / "garth_token",
-    ]
-
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
+    candidate = _normalize_tokenstore_path(TOKEN_STORE_PATH)
+    if candidate.exists():
+        return candidate
 
     raise GarminAuthError(
-        "Garmin token file not found. Checked: "
-        + ", ".join(str(path) for path in candidates)
-        + ". Run init_auth.py first or set TOKEN_FILE."
+        "Garmin token file not found at "
+        + str(candidate)
+        + ". Run init_auth.py first or set TOKEN_STORE_PATH."
     )
 
 

@@ -75,13 +75,13 @@ def test_shoe_wear_success(monkeypatch) -> None:
     monkeypatch.setattr(routes, "get_garmin_client", fake_get_client)
     monkeypatch.setattr(routes, "get_shoe_wear", fake_shoe_wear)
 
-    response = client.get("/shoe_wear?start_date=2026-01-01&end_date=2026-01-31")
+    response = client.get("/shoe-wear?start_date=2026-01-01&end_date=2026-01-31")
     assert response.status_code == 200
     assert response.json()["totals"]["totalKm"] == 10.5
 
 
 def test_shoe_wear_rejects_invalid_date_range() -> None:
-    response = client.get("/shoe_wear?start_date=2026-02-01&end_date=2026-01-01")
+    response = client.get("/shoe-wear?start_date=2026-02-01&end_date=2026-01-01")
     assert response.status_code == 400
     assert "start_date must be less than or equal to end_date" in response.json()["detail"]
 
@@ -92,6 +92,6 @@ def test_shoe_wear_maps_auth_failure_to_502(monkeypatch) -> None:
 
     monkeypatch.setattr(routes, "get_garmin_client", fake_get_client)
 
-    response = client.get("/shoe_wear?start_date=2026-01-01&end_date=2026-01-31")
+    response = client.get("/shoe-wear?start_date=2026-01-01&end_date=2026-01-31")
     assert response.status_code == 502
     assert response.json()["detail"] == "token invalid"

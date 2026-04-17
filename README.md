@@ -15,6 +15,9 @@ FastAPI service to log weight to Garmin Connect and convert recent hikes to ruck
    pip install -r requirements.txt
    python init_auth.py
    ```
+   - `init_auth.py` uses `python-garminconnect` mobile SSO auth and may prompt for MFA.
+   - Tokens are stored at `data/garmin_tokens/garmin_tokens.json`.
+   - Optional override: set `TOKEN_STORE_PATH` in `.env`.
 
 3. Build and start the container:
    ```bash
@@ -77,7 +80,7 @@ Example success response:
 `/shoe-wear` returns running, walking, and rucking distance totals (km) plus per-activity details for a date range.
 
 ```bash
-curl "http://localhost:8002/shoe-wear?start_date=2026-01-01&end_date=2026-01-31"
+curl "http://localhost:8002/shoe-wear?start_date=2026-01-01&end_date=2026-04-17"
 ```
 
 `/shoe-wear` behavior:

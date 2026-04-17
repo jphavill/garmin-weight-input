@@ -12,13 +12,14 @@ def get_shoe_wear(client: Garmin, start_date: date, end_date: date) -> dict[str,
     walking_raw = _get_activities_by_type(client, start_date, end_date, "walking")
     hiking_raw = _get_activities_by_type(client, start_date, end_date, "hiking")
 
-    running = [_normalize_activity(activity) for activity in running_raw]
-    walking = [_normalize_activity(activity) for activity in walking_raw]
-    rucking = [_normalize_activity(activity) for activity in hiking_raw if _is_rucking_activity(activity)]
+    running_count = len(running_raw)
+    walking_count = len(walking_raw)
+    rucking_activities = [activity for activity in hiking_raw if _is_rucking_activity(activity)]
+    rucking_count = len(rucking_activities)
 
-    running_km = _round_km(sum(activity["distanceKm"] for activity in running))
-    walking_km = _round_km(sum(activity["distanceKm"] for activity in walking))
-    rucking_km = _round_km(sum(activity["distanceKm"] for activity in rucking))
+    running_km = _round_km(sum(_extract_distance_meters(activity) / 1000 for activity in running_raw))
+    walking_km = _round_km(sum(_extract_distance_meters(activity) / 1000 for activity in walking_raw))
+    rucking_km = _round_km(sum(_extract_distance_meters(activity) / 1000 for activity in rucking_activities))
     total_km = _round_km(running_km + walking_km + rucking_km)
 
     return {
@@ -31,15 +32,10 @@ def get_shoe_wear(client: Garmin, start_date: date, end_date: date) -> dict[str,
             "ruckingKm": rucking_km,
         },
         "activityCounts": {
-            "running": len(running),
-            "walking": len(walking),
-            "rucking": len(rucking),
-        },
-        "activities": {
-            "running": running,
-            "walking": walking,
-            "rucking": rucking,
-        },
+            "running": running_count,
+            "walking": walking_count,
+            "rucking": rucking_count,
+        }
     }
 
 
@@ -60,21 +56,6 @@ def _get_activities_by_type(client: Garmin, start_date: date, end_date: date, ac
     if not isinstance(activities, list):
         return []
     return [activity for activity in activities if isinstance(activity, dict)]
-
-
-def _normalize_activity(activity: dict[str, Any]) -> dict[str, Any]:
-    distance_km = _round_km(_extract_distance_meters(activity) / 1000)
-    start_time_local = activity.get("startTimeLocal")
-    if not isinstance(start_time_local, str):
-        fallback = activity.get("startTimeGMT")
-        start_time_local = fallback if isinstance(fallback, str) else None
-
-    return {
-        "activityId": activity.get("activityId"),
-        "activityName": activity.get("activityName") if isinstance(activity.get("activityName"), str) else None,
-        "startTimeLocal": start_time_local,
-        "distanceKm": distance_km,
-    }
 
 
 def _extract_distance_meters(activity: dict[str, Any]) -> float:

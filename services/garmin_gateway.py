@@ -117,9 +117,9 @@ def set_activity_name(client: Garmin, activity_id: int, activity_name: str) -> N
 
 
 def _extract_authenticated_session(client: Garmin) -> Any:
-    garth_client = getattr(client, "garth", None)
-    if garth_client is not None and callable(getattr(garth_client, "request", None)):
-        return garth_client
+    native_client = getattr(client, "client", None)
+    if native_client is not None and callable(getattr(native_client, "request", None)):
+        return native_client
 
     candidates = [
         getattr(client, "session", None),
@@ -130,15 +130,6 @@ def _extract_authenticated_session(client: Garmin) -> Any:
     for candidate in candidates:
         if candidate is not None and callable(getattr(candidate, "request", None)):
             return candidate
-
-    if garth_client is not None:
-        nested_candidates = [
-            getattr(garth_client, "session", None),
-            getattr(garth_client, "_session", None),
-        ]
-        for candidate in nested_candidates:
-            if candidate is not None and callable(getattr(candidate, "request", None)):
-                return candidate
 
     return client
 

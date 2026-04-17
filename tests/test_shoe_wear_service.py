@@ -47,7 +47,7 @@ def test_get_shoe_wear_filters_hiking_to_only_rucking() -> None:
     result = get_shoe_wear(client, date(2026, 1, 1), date(2026, 1, 31))
 
     assert result["activityCounts"]["rucking"] == 1
-    assert [activity["activityId"] for activity in result["activities"]["rucking"]] == [1]
+    assert result["totals"]["ruckingKm"] == 3.0
 
 
 def test_get_shoe_wear_computes_totals_counts_and_zeros() -> None:
@@ -87,7 +87,6 @@ def test_get_shoe_wear_computes_totals_counts_and_zeros() -> None:
         "ruckingKm": 0.0,
     }
     assert empty_result["activityCounts"] == {"running": 0, "walking": 0, "rucking": 0}
-    assert empty_result["activities"] == {"running": [], "walking": [], "rucking": []}
 
 
 def test_get_shoe_wear_handles_missing_optional_fields_safely() -> None:
@@ -107,13 +106,10 @@ def test_get_shoe_wear_handles_missing_optional_fields_safely() -> None:
 
     result = get_shoe_wear(client, date(2026, 1, 1), date(2026, 1, 31))
 
-    assert result["activities"]["running"] == [
-        {
-            "activityId": None,
-            "activityName": None,
-            "startTimeLocal": "2026-01-05T08:00:00Z",
-            "distanceKm": 0.0,
-        }
-    ]
-    assert result["activities"]["walking"] == []
-    assert result["activities"]["rucking"] == []
+    assert result["totals"] == {
+        "totalKm": 0.0,
+        "runningKm": 0.0,
+        "walkingKm": 0.0,
+        "ruckingKm": 0.0,
+    }
+    assert result["activityCounts"] == {"running": 1, "walking": 0, "rucking": 0}
